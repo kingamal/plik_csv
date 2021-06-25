@@ -37,7 +37,7 @@ class File:
     def read_pickle(self, file):
         with open(file, 'rb') as fp:
             reader = fp.read()
-            self.file_content = pickle.loads(reader)
+            self.file_content = pickle.loads(reader.decode("utf-8"))
             return True
 
     def change(self, change):
@@ -70,21 +70,30 @@ class File:
 
     def save_json(self, file):
         with open(file, 'w') as fp:
-            self_content_json = json.dumps(self.file_content)
-            fp.write(self_content_json)
+            file_content_json = json.dumps(self.file_content)
+            fp.write(file_content_json)
         return True
 
     def save_pickle(self, file):
         with open(file, 'wb') as fp:
-            self_content_pickle = pickle.loads(self.file_content)
-            fp.write(self_content_pickle)
+            file_content_pickle = pickle.loads(self.file_content)
+            fp.write(file_content_pickle)
         return True
+
+    def isfile(self, file):
+        if os.path.exists(file):
+            return True
+        else:
+            print('Error')
+            path = os.getcwd()
+            files = os.system(dir)
 
 fi = File()
 infile = sys.argv[1]
 outfile = sys.argv[2]
 changes = sys.argv[3:]
 
+fi.isfile(infile)
 fi.read(infile)
 fi.change(changes)
 fi.save(outfile)
