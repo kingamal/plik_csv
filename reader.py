@@ -1,4 +1,8 @@
-import csv, sys, json, pickle, os
+import csv
+import sys
+import json
+import pickle
+import os
 
 # file_content.encode("utf-8")
 # file_content.decode("utf-8")
@@ -9,6 +13,14 @@ class File:
         self.file_content = []
 
     def read(self, file):
+        if os.path.exists(file):
+            return True
+        else:
+            print('Error - Nie ma takiego pliku wejściowego!')
+            catalogs = list(os.listdir())
+            print('Pliki, które znajdują się w tym katalogu to:')
+            for cat in catalogs:
+                print(cat)
         extension = file.split('.')[-1]
         if extension == 'csv':
             self.read_csv(file)
@@ -37,16 +49,13 @@ class File:
     def read_pickle(self, file):
         with open(file, 'rb') as fp:
             reader = fp.read()
-            self.file_content = pickle.loads(reader.decode("utf-8"))
+            self.file_content = pickle.loads(reader)
             return True
 
     def change(self, change):
         for parameter in change:
             param_list = parameter.split(",")
-            if int(param_list[1])-1 == 0:
-                self.file_content[int(param_list[0]) - 1][int(param_list[1]) - 1] = param_list[2]
-            else:
-                self.file_content[int(param_list[0])-1][int(param_list[1])-1] = "  " + param_list[2]
+            self.file_content[int(param_list[0]) - 1][int(param_list[1]) - 1] = param_list[2]
 
     def save(self, file):
         extension = file.split('.')[-1]
@@ -76,24 +85,16 @@ class File:
 
     def save_pickle(self, file):
         with open(file, 'wb') as fp:
-            file_content_pickle = pickle.loads(self.file_content)
+            file_content_pickle = pickle.dumps(self.file_content)
             fp.write(file_content_pickle)
         return True
 
-    def isfile(self, file):
-        if os.path.exists(file):
-            return True
-        else:
-            print('Error')
-            path = os.getcwd()
-            files = os.system(dir)
 
 fi = File()
 infile = sys.argv[1]
 outfile = sys.argv[2]
 changes = sys.argv[3:]
 
-fi.isfile(infile)
 fi.read(infile)
 fi.change(changes)
 fi.save(outfile)
