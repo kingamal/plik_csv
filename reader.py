@@ -13,14 +13,7 @@ class File:
         self.file_content = []
 
     def read(self, file):
-        if os.path.exists(file):
-            return True
-        else:
-            print('Error - Nie ma takiego pliku wejściowego!')
-            catalogs = list(os.listdir())
-            print('Pliki, które znajdują się w tym katalogu to:')
-            for cat in catalogs:
-                print(cat)
+        self.isfile(file)
         extension = file.split('.')[-1]
         if extension == 'csv':
             self.read_csv(file)
@@ -38,24 +31,39 @@ class File:
             reader = csv.reader(fp)
             for line in reader:
                 self.file_content.append(line)
+                print(line)
             return True
 
     def read_json(self, file):
         with open(file, 'r') as fp:
             reader = fp.read()
             self.file_content = json.loads(reader)
+
+            for line in self.file_content:
+                print(line)
             return True
 
     def read_pickle(self, file):
         with open(file, 'rb') as fp:
             reader = fp.read()
             self.file_content = pickle.loads(reader)
+
+            for line in self.file_content:
+                print(line)
             return True
 
     def change(self, change):
         for parameter in change:
             param_list = parameter.split(",")
-            self.file_content[int(param_list[0]) - 1][int(param_list[1]) - 1] = param_list[2]
+            rows = len(self.file_content)
+            columns = len(param_list[0:])
+            if int(param_list[0]) - 1 <= rows and int(param_list[1]) - 1 <= columns:
+                if int(param_list[1]) - 1 == 0:
+                    self.file_content[int(param_list[0]) - 1][int(param_list[1]) - 1] = param_list[2]
+                else:
+                    self.file_content[int(param_list[0]) - 1][int(param_list[1]) - 1] = "  " + param_list[2]
+            else:
+                print('Zła kolumna albo wiersz!')
 
     def save(self, file):
         extension = file.split('.')[-1]
@@ -88,6 +96,17 @@ class File:
             file_content_pickle = pickle.dumps(self.file_content)
             fp.write(file_content_pickle)
         return True
+
+    def isfile(self, file):
+        if os.path.exists(file):
+            return True
+        else:
+            print('Error - Nie ma takiego pliku wejściowego!')
+            catalogs = list(os.listdir())
+            print('Pliki, które znajdują się w tym katalogu to:')
+            for cat in catalogs:
+                print(cat)
+            return False
 
 
 fi = File()
